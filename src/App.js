@@ -1,23 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import { useMemo } from "react";
+import { useFetch } from "./hooks"
+import { groupTransactionByUserId } from "./util"
+import RewardTable from "./components/RewardTable"
 
 function App() {
+  const { data: transactions, isLoading} = useFetch("transactions", true)
+  
+  const userTransactions = useMemo(() => {
+    if (transactions && transactions.length) {
+      return groupTransactionByUserId(transactions)
+    }
+    return []
+  }, [transactions])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {isLoading && <div>Loading..</div>}
+      <RewardTable userTransactions={userTransactions}/>
     </div>
   );
 }
